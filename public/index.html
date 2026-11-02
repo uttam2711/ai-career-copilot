@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="theme-color" content="#0f172a" />
+
+  <meta name="description" content="AI Career Copilot analyzes your resume against a job description and helps you close skill gaps." />
+
+  <title>AI Career Copilot — Resume Analyzer</title>
+
+  <style>
+
+    :root{--primary:#0f172a;--accent:#ea580c;--accent-hover:#c2410c;--bg:#f8fafc;--card:#fff;--text:#1e293b;--muted:#64748b;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--border:#e2e8f0;--shadow:0 8px 28px rgba(15,23,42,.06)}
+
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+
+    header{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:38px 20px 34px;text-align:center;position:relative;overflow:hidden}header:before{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-270px;background:var(--accent);opacity:.16;border-radius:50%;filter:blur(8px)}header h1{font-size:clamp(27px,4vw,38px);font-weight:850;letter-spacing:-1.2px;position:relative}header h1 span{color:#fb6b2b}header p{color:#dbe4f0;margin:8px auto 0;max-width:610px;font-size:14px;position:relative}.brand-pill{display:inline-flex;margin-top:14px;padding:4px 12px;border-radius:99px;background:#ea580c;font-size:10px;font-weight:800;letter-spacing:.6px;position:relative}
+
+    .container{max-width:1120px;margin:0 auto;padding:28px 20px 54px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 16px}.section-head h2{font-size:19px}.section-head p{font-size:12px;color:var(--muted)}.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.input-card,.panel,.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:21px;box-shadow:var(--shadow)}.input-card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:9px}.icon{width:31px;height:31px;border-radius:9px;background:#fff1e9;display:grid;place-items:center;font-size:16px}.input-card:nth-child(2) .icon{background:#eaf2ff}textarea{width:100%;min-height:205px;padding:13px;border:1.5px solid var(--border);border-radius:10px;font:13px/1.6 inherit;font-family:inherit;resize:vertical;background:#fafafa;color:var(--text)}textarea:focus{outline:none;border-color:var(--accent);background:#fff}.input-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px;color:var(--muted);font-size:11px}.file-label,.secondary-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:12px;font-weight:700;cursor:pointer}.file-label:hover,.secondary-btn:hover{border-color:var(--accent);color:var(--accent)}input[type=file]{display:none}.file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:210px}.action-row{display:flex;gap:10px;margin-top:18px}.analyze-btn{flex:1;border:0;border-radius:11px;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-hover));color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 13px #ea580c3b;transition:.2s}.analyze-btn:hover{transform:translateY(-1px)}.analyze-btn:disabled{opacity:.6;cursor:wait;transform:none}.tips-box{margin-top:15px;padding:12px 15px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:11px;color:#075985;font-size:12px}.status{margin-top:14px;font-size:13px;color:var(--muted)}.error-box{padding:14px 16px;border-radius:11px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;margin-top:16px;font-size:13px}.loading{text-align:center;padding:32px;color:var(--muted)}.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}
+
+    .results{margin-top:34px}.results-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.results-top h2{font-size:20px}.result-actions{display:flex;gap:8px;flex-wrap:wrap}.result-grid{display:grid;grid-template-columns:300px 1fr;gap:17px}.score-card{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px}.score-ring{--score:0;width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--score)*1%),#e2e8f0 0);display:grid;place-items:center;margin:14px auto;position:relative}.score-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:white}.score-inner{position:relative;z-index:1}.score-number{font-size:45px;font-weight:850;line-height:1;color:var(--primary)}.score-label{font-size:11px;color:var(--muted)}.score-card h3{font-size:13px;text-transform:uppercase;letter-spacing:.5px}.score-message{font-size:12px;color:var(--muted);max-width:220px}.score-note{font-size:10px;color:var(--muted);margin-top:10px}.summary-card h3,.result-card h3{font-size:13px;text-transform:uppercase;letter-spacing:.45px;margin-bottom:10px}.summary-card p{font-size:14px}.breakdown{margin-top:18px;display:grid;gap:11px}.bar-row{display:grid;grid-template-columns:145px 1fr 35px;align-items:center;gap:9px;font-size:11px}.bar-track{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:linear-gradient(90deg,#fb923c,#ea580c);border-radius:99px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.result-card{padding:19px}.plain-list{list-style:none;display:grid;gap:9px}.plain-list li{font-size:13px;padding-left:21px;position:relative}.plain-list li:before{content:"✓";position:absolute;left:0;color:var(--success);font-weight:900}.skill-chips{display:flex;flex-wrap:wrap;gap:7px}.chip{display:inline-flex;padding:5px 10px;border-radius:99px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:700}.chip.good{background:#f0fdf4;border-color:#bbf7d0;color:#166534}.skill-row{padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:12px}.skill-row:last-child{border:0}.priority{font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;margin-left:5px}.priority.high{background:#fee2e2;color:#991b1b}.priority.medium{background:#fef3c7;color:#92400e}.priority.low{background:#e0f2fe;color:#075985}.skill-reason{color:var(--muted);margin-top:3px}.roadmap-item{border-left:3px solid #fb923c;padding:2px 0 12px 12px;margin:0 0 7px 4px}.roadmap-item strong{font-size:12px}.roadmap-item p{font-size:12px;color:var(--muted)}.roadmap-item small{color:#c2410c;font-weight:700}.disclaimer{font-size:11px;color:var(--muted);margin-top:13px}.history-section{margin-top:36px}.history-list{display:grid;gap:9px}.history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:#fff;border:1px solid var(--border);border-radius:11px}.history-item strong{font-size:13px}.history-item small{display:block;color:var(--muted);font-size:11px}.history-score{font-size:17px;font-weight:850;color:var(--accent);white-space:nowrap}.history-empty{padding:20px;border:1px dashed #cbd5e1;border-radius:12px;color:var(--muted);font-size:12px;text-align:center}.history-actions{display:flex;gap:7px;align-items:center}.delete-btn{border:0;background:none;color:var(--muted);cursor:pointer;padding:5px;font-size:12px}
+    .evidence-section{margin-top:16px}
+    .evidence-intro{font-size:12px;color:var(--muted);margin:-3px 0 12px}
+    .evidence-list{display:grid;gap:9px}
+    .evidence-item{border:1px solid var(--border);border-radius:11px;padding:12px;background:#fff}
+    .evidence-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .evidence-title{font-size:13px;font-weight:800}
+    .evidence-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+    .evidence-tag{font-size:10px;font-weight:800;padding:3px 7px;border-radius:99px;background:#f1f5f9;color:#334155}
+    .evidence-status{font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;text-transform:capitalize}
+    .evidence-status.demonstrated{background:#dcfce7;color:#166534}
+    .evidence-status.partial_match{background:#fef3c7;color:#92400e}
+    .evidence-status.listed_only{background:#e0f2fe;color:#075985}
+    .evidence-status.missing{background:#fee2e2;color:#991b1b}
+    .evidence-detail{font-size:12px;color:var(--muted);margin-top:6px}
+    .evidence-detail strong{color:var(--text)}
+    .scoring-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+    .hidden{display:none!important}footer{text-align:center;border-top:1px solid var(--border);padding:25px 15px;color:var(--muted);font-size:11px}footer strong{color:var(--text)}
+
+    @media(max-width:780px){.input-grid,.result-grid,.detail-grid{grid-template-columns:1fr}.score-card{min-height:235px}.section-head{align-items:start;flex-direction:column}.results-top{align-items:start;flex-direction:column}.bar-row{grid-template-columns:115px 1fr 30px}}@media(max-width:480px){.container{padding:20px 13px 40px}.input-card,.panel,.result-card{padding:16px}.action-row{flex-direction:column}.history-item{align-items:start}.history-actions{flex-wrap:wrap}}
+
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+
+    <h1>AI Career <span>Copilot</span></h1>
+
+    <p>Match your resume to the role, uncover skill gaps, and get a practical plan to become a stronger candidate.</p>
+
+    <div class="brand-pill">POWERED BY GOOGLE GEMINI AI</div>
+
+  </header>
+
+
+
+  <main class="container">
+
+    <section aria-labelledby="inputTitle">
+
+      <div class="section-head"><div><h2 id="inputTitle">Start your resume analysis</h2><p>Use your full resume and the complete job description for more useful feedback.</p></div></div>
+
+      <div class="input-grid">
+
+        <div class="input-card">
+
+          <h3><span class="icon">📄</span> Your Resume</h3>
+
+          <textarea id="resume" maxlength="18000" placeholder="Paste your full resume text here...&#10;&#10;Include education, skills, projects, internships, experience and achievements."></textarea>
+
+          <div class="input-foot"><label class="file-label" for="resumeFile">＋ Upload PDF resume</label><span class="file-name" id="fileName">PDF or paste text</span><span id="resumeCount">0 / 18,000</span></div>
+
+          <input id="resumeFile" type="file" accept="application/pdf,.pdf" />
+
+        </div>
+
+        <div class="input-card">
+
+          <h3><span class="icon">💼</span> Job Description</h3>
+
+          <textarea id="jobDesc" maxlength="12000" placeholder="Paste the complete job description here...&#10;&#10;Include role title, responsibilities, required skills and qualifications."></textarea>
+
+          <div class="input-foot"><span>Include required and preferred qualifications.</span><span id="jobCount">0 / 12,000</span></div>
+
+        </div>
+
+      </div>
+
+      <div class="action-row"><button class="analyze-btn" id="analyzeBtn">🚀 Analyze Resume</button><button class="secondary-btn" id="clearBtn" type="button">Clear inputs</button></div>
+
+      <div class="tips-box"><strong>Pro tip:</strong> Include the complete resume and job description. AI feedback is an estimate; verify suggestions before changing your resume. Your resume text is sent to Gemini for analysis and is not saved in your local history.</div>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    </section>
+
+
+
+    <section id="results" class="results hidden" aria-live="polite"></section>
+
+
+
+    <section class="history-section" aria-labelledby="historyTitle">
+
+      <div class="section-head"><div><h2 id="historyTitle">Analysis history</h2><p>Saved on this browser only. Resume and job-description text are not retained.</p></div><button id="clearHistoryBtn" class="secondary-btn" type="button">Clear history</button></div>
+
+      <div id="historyList" class="history-list"></div>
+
+    </section>
+
+  </main>
+
+  <footer><p>Built by <strong>Uttam Prajapat</strong> · ApnoAI AI/ML Intern · October 2026</p><p style="margin-top:5px">AI Career Copilot · Gemini-powered resume feedback</p></footer>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
+  <script type="module">
+
+    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+
+
+
+    const HISTORY_KEY = 'ai-career-copilot-history-v1';
+
+    const MAX_PDF_BYTES = 8 * 1024 * 1024;
+
+    const $ = (id) => document.getElementById(id);
+
+    let latestAnalysis = null;
+
+    let latestMeta = null;
+
+
+
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+    const asArray = value => Array.isArray(value) ? value : [];
+
+    const clamp = (value,min=0,max=100) => Math.min(max,Math.max(min,Number(value)||0));
+
+    const statusLabel = value => ({
+      demonstrated:'Demonstrated',
+      partial_match:'Partial match',
+      listed_only:'Listed only',
+      missing:'Missing'
+    }[value] || 'Unclassified');
+
+
+    const setStatus = (message, isError=false) => { $('status').textContent = message; $('status').style.color = isError ? 'var(--danger)' : 'var(--muted)'; };
+
+
+
+    function updateCounts(){
+
+      $('resumeCount').textContent = `${$('resume').value.length.toLocaleString()} / 18,000`;
+
+      $('jobCount').textContent = `${$('jobDesc').value.length.toLocaleString()} / 12,000`;
+
+    }
+
+    $('resume').addEventListener('input', updateCounts);
+
+    $('jobDesc').addEventListener('input', updateCounts);
+
+
+
+    async function extractPdfText(file){
+
+      if(file.size > MAX_PDF_BYTES) throw new Error('PDF is larger than 8 MB. Please use a smaller file.');
+
+      const bytes = new Uint8Array(await file.arrayBuffer());
+
+      const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+
+      if(pdf.numPages > 20) throw new Error('PDF has more than 20 pages. Please upload a shorter resume.');
+
+      const pages = [];
+
+      for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){
+
+        const page = await pdf.getPage(pageNo);
+
+        const content = await page.getTextContent();
+
+        pages.push(content.items.map(item=>item.str).join(' '));
+
+      }
+
+      const text = pages.join('\n').replace(/\s+/g,' ').trim();
+
+      if(text.length < 50) throw new Error('Could not extract enough text. This may be a scanned image PDF. Please paste its text or use OCR first.');
+
+      if(text.length > 18000) throw new Error('Extracted resume exceeds 18,000 characters. Please shorten it.');
+
+      return text;
+
+    }
+
+
+
+    $('resumeFile').addEventListener('change', async (event)=>{
+
+      const file = event.target.files?.[0];
+
+      if(!file) return;
+
+      if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){setStatus('Please select a PDF file.',true);return;}
+
+      $('fileName').textContent = file.name;
+
+      setStatus('Extracting text from your PDF…');
+
+      try{$('resume').value = await extractPdfText(file);updateCounts();setStatus(`Extracted resume text from ${file.name}. Review it before analysis.`);}
+
+      catch(error){setStatus(error.message,true);$('fileName').textContent='PDF extraction failed';}
+
+    });
+
+
+
+    function readHistory(){
+
+      try{const value=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');return Array.isArray(value)?value:[];}catch{return [];}
+
+    }
+
+    function saveHistory(analysis, meta){
+
+      const entry={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),createdAt:new Date().toISOString(),role:meta.role||'Resume analysis',score:analysis.ats_score,analysis};
+
+      const next=[entry,...readHistory()].slice(0,20);
+
+      try{localStorage.setItem(HISTORY_KEY,JSON.stringify(next));}catch{setStatus('Analysis completed, but browser storage is full. Clear old history to save more.',true);}
+
+      renderHistory();
+
+    }
+
+    function renderHistory(){
+
+      const host=$('historyList'),items=readHistory();
+
+      if(!items.length){host.innerHTML='<div class="history-empty">No analyses saved yet. Your completed analyses will appear here.</div>';return;}
+
+      host.innerHTML=items.map(item=>`<div class="history-item"><div><strong>${escapeHtml(item.role && item.role !== 'Resume analysis' ? item.role : 'Historical analysis · Title unavailable')}</strong><small>${new Date(item.createdAt).toLocaleString()} · AI compatibility estimate</small></div><div class="history-actions"><span class="history-score">${clamp(item.score)}%</span><button class="secondary-btn" data-open="${escapeHtml(item.id)}" type="button">View</button><button class="delete-btn" data-delete="${escapeHtml(item.id)}" type="button" aria-label="Delete history item">Delete</button></div></div>`).join('');
+
+    }
+
+    $('historyList').addEventListener('click',(event)=>{
+
+      const open=event.target.closest('[data-open]');const del=event.target.closest('[data-delete]');
+
+      if(open){const item=readHistory().find(x=>x.id===open.dataset.open);if(item){latestAnalysis=item.analysis;latestMeta={role:item.role,createdAt:item.createdAt};renderResults(item.analysis,item.role);$('results').scrollIntoView({behavior:'smooth'});}}
+
+      if(del){localStorage.setItem(HISTORY_KEY,JSON.stringify(readHistory().filter(x=>x.id!==del.dataset.delete)));renderHistory();}
+
+    });
+
+    $('clearHistoryBtn').addEventListener('click',()=>{if(confirm('Delete all saved analysis history from this browser?')){localStorage.removeItem(HISTORY_KEY);renderHistory();}});
+
+
+
+    function renderResults(a, role){
+
+      const score=clamp(a.ats_score);const breakdown=a.score_breakdown||{};
+
+      const strengths=asArray(a.strengths),matching=asArray(a.matching_skills),missing=asArray(a.missing_skills),keywords=asArray(a.missing_keywords),improvements=asArray(a.improvements),roadmap=asArray(a.learning_roadmap),caveats=asArray(a.caveats);
+      const evidence=asArray(a.requirement_evidence);
+
+      const scoringMethod=a.scoring_method||{};
+      const activeDimensions=Array.isArray(scoringMethod.active_dimensions)?scoringMethod.active_dimensions:Object.keys(breakdown);
+      const bars=[
+        {key:'skills',label:'Relevant skills'},
+        {key:'experience_and_projects',label:'Projects / experience'},
+        {key:'education_and_qualifications',label:'Education'},
+        {key:'keywords_and_evidence',label:'Keywords / evidence'}
+      ].map(item=>({...item,value:breakdown[item.key],active:activeDimensions.includes(item.key)}));
+
+      $('results').innerHTML=`
+
+        <div class="results-top"><h2>Resume analysis ${role?`<span style="font-size:12px;color:var(--muted);font-weight:500">· ${escapeHtml(role)}</span>`:''}</h2><div class="result-actions"><button class="secondary-btn" id="downloadReportBtn">⬇ Download PDF report</button></div></div>
+
+        <div class="result-grid"><div class="result-card score-card"><h3>🎯 Estimated compatibility</h3><div class="score-ring" style="--score:${score}"><div class="score-inner"><div class="score-number">${score}</div><div class="score-label">out of 100</div></div></div><p class="score-message">${score>=80?'Strong alignment with this role.':score>=60?'Promising match with some gaps to address.':score>=40?'Partial alignment; targeted improvements recommended.':'Significant gaps to work on before applying.'}</p><p class="score-note">AI estimate, not an employer ATS result.</p></div>
+
+        <div class="result-card summary-card"><h3>📝 Overall assessment</h3><p>${escapeHtml(a.summary||'No summary returned.')}</p><div class="breakdown"><h3>Score breakdown</h3>${bars.map(({label,value,active})=>`<div class="bar-row"><span>${label}${active?'':' (not assessed)'}</span><div class="bar-track">${active?`<div class="bar-fill" style="width:${clamp(value)}%"></div>`:''}</div><strong>${active?clamp(value):'—'}</strong></div>`).join('')}</div></div></div>
+
+        ${evidence.length?`
+        <div class="result-card evidence-section">
+          <h3>🔬 Job requirement evidence</h3>
+          <p class="evidence-intro">Each job requirement is matched against the resume. A listed skill is not treated as proven hands-on experience.</p>
+          <div class="evidence-list">${evidence.map(item=>`
+            <article class="evidence-item">
+              <div class="evidence-top">
+                <div class="evidence-title">${escapeHtml(item.requirement)}</div>
+                <div class="evidence-meta">
+                  <span class="evidence-tag">${escapeHtml(item.category?.replaceAll('_',' ')||'Requirement')}</span><span class="evidence-tag">${escapeHtml(item.importance)}</span>
+                  <span class="evidence-status ${escapeHtml(item.status)}">${escapeHtml(statusLabel(item.status))}</span>
+                </div>
+              </div>
+              <div class="evidence-detail"><strong>Resume evidence:</strong> ${escapeHtml(item.resume_evidence||'No matching evidence found.')}</div>
+              <div class="evidence-detail"><strong>Assessment:</strong> ${escapeHtml(item.reasoning||'')}</div>
+            </article>`).join('')}</div>
+          <p class="scoring-note">${escapeHtml(scoringMethod.note||'Scoring: demonstrated = 100%; partial match = 50%; listed only = 25%; missing = 0%. Required requirements carry twice the weight of preferred requirements.')}</p>
+        </div>`:''}
+        <div class="detail-grid"><div class="result-card"><h3>✅ Resume strengths</h3><ul class="plain-list">${strengths.map(x=>`<li>${escapeHtml(x)}</li>`).join('')||'<li>No strengths listed.</li>'}</ul></div>
+
+        <div class="result-card"><h3>🟢 Matching skills</h3><div class="skill-chips">${matching.map(x=>`<span class="chip good">${escapeHtml(x)}</span>`).join('')||'<span class="status">No matching skills listed.</span>'}</div></div>
+
+        <div class="result-card"><h3>🧩 Skill gaps to address</h3>${missing.map(x=>`<div class="skill-row"><strong>${escapeHtml(x.skill)}</strong><span class="priority ${String(x.priority).toLowerCase()}">${escapeHtml(x.priority)}</span><div class="skill-reason">${escapeHtml(x.reason)}</div></div>`).join('')||'<p class="status">No specific skill gaps identified.</p>'}</div>
+
+        <div class="result-card"><h3>🔎 Missing job keywords</h3><div class="skill-chips">${keywords.map(x=>`<span class="chip">${escapeHtml(x)}</span>`).join('')||'<span class="status">No missing keywords identified.</span>'}</div></div>
+
+        <div class="result-card"><h3>💡 Resume improvements</h3><ul class="plain-list">${improvements.map(x=>`<li>${escapeHtml(x)}</li>`).join('')||'<li>No improvements listed.</li>'}</ul></div>
+
+        <div class="result-card"><h3>🗺️ Suggested learning roadmap</h3>${roadmap.map(x=>`<div class="roadmap-item"><strong>${escapeHtml(x.skill)}</strong><p>${escapeHtml(x.action)}</p><small>${escapeHtml(x.timeframe)}</small></div>`).join('')||'<p class="status">No roadmap returned.</p>'}</div></div>
+
+        ${caveats.length?`<div class="tips-box"><strong>Notes and limitations</strong><ul style="padding-left:18px;margin-top:5px">${caveats.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`:''}
+
+        <p class="disclaimer">AI-generated guidance only. Verify every recommendation and never add a skill or achievement you cannot honestly demonstrate.</p>`;
+
+      $('results').classList.remove('hidden');
+
+      $('downloadReportBtn').addEventListener('click',downloadReport);
+
+    }
+
+
+
+    function downloadReport(){
+
+      if(!latestAnalysis||!window.jspdf?.jsPDF){setStatus('PDF report library is unavailable. Refresh and try again.',true);return;}
+
+      const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const a=latestAnalysis;let y=18;const left=16,width=178;
+
+      const add=(text,size=10,bold=false,color=[30,41,59])=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...color);const lines=doc.splitTextToSize(String(text??''),width);if(y+lines.length*(size*.48)+5>280){doc.addPage();y=18;}doc.text(lines,left,y);y+=lines.length*(size*.48)+4;};
+
+      add('AI CAREER COPILOT',18,true,[234,88,12]);add('Resume-to-job compatibility report',11,true);add(`Role: ${latestMeta?.role||'Resume analysis'}`);add(`Generated: ${new Date().toLocaleString()}`);add(`Estimated compatibility score: ${clamp(a.ats_score)}/100`,15,true);add('This is an AI-generated estimate, not an actual employer ATS score.',8,false,[100,116,139]);
+
+      add('Overall assessment',12,true);add(a.summary||'');
+
+      add('Score breakdown',12,true);
+      const active=Array.isArray(a.scoring_method?.active_dimensions)?a.scoring_method.active_dimensions:Object.keys(a.score_breakdown||{});
+      Object.entries(a.score_breakdown||{}).forEach(([k,v])=>add(`${k.replaceAll('_',' ')}: ${active.includes(k)?`${clamp(v)}/100`:'Not assessed'}`));
+      if(asArray(a.requirement_evidence).length){
+        add('Job requirement evidence',12,true);
+        asArray(a.requirement_evidence).forEach(item=>add(`${item.requirement} — ${item.importance}; ${statusLabel(item.status)}. Resume evidence: ${item.resume_evidence||'None'}. Assessment: ${item.reasoning||''}`));
+      }
+
+      const sections=[['Strengths',a.strengths],['Matching skills',a.matching_skills],['Missing skills',asArray(a.missing_skills).map(x=>`${x.skill} (${x.priority}): ${x.reason}`)],['Missing keywords',a.missing_keywords],['Recommended improvements',a.improvements],['Learning roadmap',asArray(a.learning_roadmap).map(x=>`${x.skill} — ${x.action} (${x.timeframe})`)],['Caveats',a.caveats]];
+
+      sections.forEach(([title,items])=>{if(asArray(items).length){add(title,12,true);items.forEach(item=>add(`• ${typeof item==='string'?item:`${item.skill}: ${item.action}`}`));}});
+
+      add('Reminder: verify all recommendations. Do not claim skills or experience you do not have.',9,true,[153,52,18]);
+
+      doc.save('AI-Career-Copilot-Analysis.pdf');
+
+    }
+
+
+
+    $('analyzeBtn').addEventListener('click',async()=>{
+
+      const resume=$('resume').value.trim(),jobDescription=$('jobDesc').value.trim();
+
+      if(resume.length<50||jobDescription.length<50){setStatus('Enter at least 50 characters in both the resume and job description.',true);return;}
+
+      if(resume.length>18000||jobDescription.length>12000){setStatus('Input is too long. Shorten it and try again.',true);return;}
+
+      const button=$('analyzeBtn');button.disabled=true;button.textContent='Analyzing with Gemini…';$('results').classList.remove('hidden');$('results').innerHTML='<div class="loading"><div class="spinner"></div><strong>Extracting job requirements and checking resume evidence…</strong><p style="font-size:12px;margin-top:6px">This can take a few seconds.</p></div>';setStatus('Sending your resume and job description securely to the analysis endpoint…');
+
+      try{
+
+        const response=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({resume,jobDescription})});
+
+        const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Request failed (${response.status}).`);
+
+        if(!payload.analysis)throw new Error('The server returned no analysis.');
+
+        latestAnalysis=payload.analysis;latestAnalysis.scoring_method=payload.scoring_method||null;const role=(jobDescription.match(/^\s*#\s*(.+?)\s*$/m)||jobDescription.match(/(?:job title|position|role)\s*[:\-]\s*([^\n.]+)/i)||[])[1]?.replace(/\*\*/g,'').trim()||'Resume analysis';latestMeta={role,createdAt:new Date().toISOString()};
+
+        renderResults(latestAnalysis,role);saveHistory(latestAnalysis,latestMeta);setStatus(`Analysis complete using ${payload.model||'Gemini'}.`);$('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+      }catch(error){$('results').innerHTML=`<div class="error-box"><strong>Analysis failed</strong><br>${escapeHtml(error.message)}<br><br>Check your network, Vercel environment variable and Gemini API quota, then try again.</div>`;setStatus('Analysis could not be completed.',true);}
+
+      finally{button.disabled=false;button.textContent='🚀 Analyze Resume';}
+
+    });
+
+
+
+    $('clearBtn').addEventListener('click',()=>{$('resume').value='';$('jobDesc').value='';$('resumeFile').value='';$('fileName').textContent='PDF or paste text';updateCounts();setStatus('Inputs cleared.');});
+
+    renderHistory();updateCounts();
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+cd C:\Users\praja\Documents\ai-career-copilot
+
+$rules = @(
+    ".env",
+    ".env.*",
+    "api/*.before-*.js",
+    "public/*.before-*.html",
+    "public/index.backup.html",
+    "package*.before-*.json"
+)
+
+$existing = if (Test-Path .vercelignore) {
+    Get-Content .vercelignore
+} else {
+    @()
+}
+
+foreach ($rule in $rules) {
+    if ($existing -notcontains $rule) {
+        Add-Content .vercelignore $rule
+    }
+}
+
+Write-Host "Deployment exclusions configured." -ForegroundColor Green
+
+Get-Content .vercelignore
+request.json
+.env.example
+
+tests/
